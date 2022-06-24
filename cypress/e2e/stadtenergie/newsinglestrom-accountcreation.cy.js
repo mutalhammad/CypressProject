@@ -1,6 +1,7 @@
+import dayjs from 'dayjs';
 describe('New single strom account creation', () => {
   
-
+  const emailCalculation = 'muhammad+ct'+new Date().valueOf()+'@mblb.net'
 
   it('Visit website and accept cookies', () => {
     cy.visit('https://qa.stadtenergie.mblb.net/')
@@ -31,20 +32,59 @@ describe('New single strom account creation', () => {
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
-  it('Input user details screen', () => {
+  it('Input user details - Step 1', () => {
     cy.url().should('include', 'prozess?step=0')
-    const emailCalculation = "muhammad+cypresstest"+cy.moment().utc()+"@mblb.net"
+    
+    
     cy.fixture('user_details').then(data => {
       data.email = emailCalculation
+    })
+    .then(data => {
       cy.get('[name="firstname"]').type(data.firstname).should('have.value', data.firstname)
-      cy.get('[name="surname"]').type(data.firstname).should('have.value', data.lastname)
+      cy.get('[name="surname"]').type(data.lastname).should('have.value', data.lastname)
       cy.get('[name="dateOfBirth"]').type(data.dob).should('have.value', data.dob)
       cy.get('[name="email"]').type(data.email).should('have.value', data.email)
+      cy.get('[name="phoneNumberValue"]').type(data.phoneNumber).should('have.value', data.phoneNumber)
+      cy.get('[name="street"]').should('have.value', data.address)
+      cy.get('[name="houseNumber"]').should('have.value', data.houseNumber)
+      cy.get('[name="postalCode"]').should('have.value', data.postalCode)
+      cy.get('[data-cypress-id="nextPersonalInformation"]').click()
     })
   })
 
-  
+  it('Input user details - Step 2', () => {
+    cy.url().should('include', 'prozess?step=1')
+    const now = dayjs();
+    const nextMonth = now.month(now.month() + 1).date(1).hour(0).minute(0).second(0);
+    const formattedNextMonth = nextMonth.format('DD.MM.YYYY')
+    const runtimeCounterNumber = dayjs().unix()
+    
+    cy.fixture('user_details').then(data => {
+      cy.get('[data-cypress-id="hasDesiredDate"]').click()
+      cy.get('[name="desiredDate"]').type(formattedNextMonth).should('have.value', formattedNextMonth)
+      cy.get('[name="electricity_previousProviderName"]').type(data.previousProvider).should('have.value', data.previousProvider)
+      cy.get('[name="electricity_counterNumber"]').type(runtimeCounterNumber).should('have.value', runtimeCounterNumber)
+      cy.get('[data-cypress-id="continueWithoutPayment"]').click()
+    })
+  })
 
+  it('Input user details - Step 3', () => {
+    cy.url({timeout:30000}).should('include', 'prozess?step=3')
+    cy.get('div[data-cypress-id="authorizeStadtenergy"]').click();
+    cy.get('div[data-cypress-id="acceptTermsAndConditionsElectricity"]').click();
+    cy.get('div[data-cypress-id="readCancelationPolicy"]').click();
+    cy.get('button[data-cypress-id="submitOrder"]').click();
+  })
+
+  it('Order submission success & set new password', () => {
+    //cy.url().should('include', 'prozess/erfolg?type=pending')
+    cy.get('[data-cypress-id="toAccount"]', { timeout: 30000 }).should('be.visible').click()
+    cy.fixture('user_details').then(data => {
+      cy.get('[name="password"]').type(data.password).should('have.value', data.password)
+      cy.get('[name="newPassword"]').type(data.password).should('have.value', data.password)
+    })
+    cy.get('form').submit()
+  })
 
 
 })
