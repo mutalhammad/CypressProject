@@ -2,6 +2,17 @@ import dayjs from 'dayjs';
 describe('New single strom account creation', () => {
   
   const emailCalculation = 'muhammad+ct'+new Date().valueOf()+'@mblb.net'
+  it('Generate and update email in fixture file', () => {
+    cy.readFile("cypress/fixtures/user_details.json", (err, data) => {
+      if (err) {
+          return console.error(err);
+      }
+    }).then((data) => {
+      data.email = emailCalculation
+      cy.writeFile("cypress/fixtures/user_details.json", JSON.stringify(data, null, '\t'))
+    })
+  })
+
 
   it('Visit website and accept cookies', () => {
     cy.visit('https://qa.stadtenergie.mblb.net/')
@@ -12,7 +23,7 @@ describe('New single strom account creation', () => {
     cy.fixture('user_details').then(data => {
       cy.get('[data-cypress-id="postalCode"]').type(data.postalCode).should('have.value', data.postalCode)
       cy.get('[name="street"]', { timeout: 10000 }).should('be.visible')
-      cy.get('[name="street"]').type(data.address).should('have.value', data.address)
+      cy.get('[name="street"]').type(data.electricityAddress).should('have.value', data.electricityAddress)
       cy.get('[name="houseNumber"]').type(data.houseNumber).should('have.value', data.houseNumber)
     })
     cy.get('[data-cypress-id="postalCodeToTariff"]').click()
@@ -45,7 +56,7 @@ describe('New single strom account creation', () => {
       cy.get('[name="dateOfBirth"]').type(data.dob).should('have.value', data.dob)
       cy.get('[name="email"]').type(data.email).should('have.value', data.email)
       cy.get('[name="phoneNumberValue"]').type(data.phoneNumber).should('have.value', data.phoneNumber)
-      cy.get('[name="street"]').should('have.value', data.address)
+      cy.get('[name="street"]').should('have.value', data.electricityAddress)
       cy.get('[name="houseNumber"]').should('have.value', data.houseNumber)
       cy.get('[name="postalCode"]').should('have.value', data.postalCode)
       cy.get('[data-cypress-id="nextPersonalInformation"]').click()
@@ -84,6 +95,10 @@ describe('New single strom account creation', () => {
       cy.get('[name="newPassword"]').type(data.password).should('have.value', data.password)
     })
     cy.get('form').submit()
+  })
+
+  it('Goto Contracts tab', () => {
+    cy.get('[data-cypress-id="Verträge"]', { timeout: 30000 }).should('be.visible').click()
   })
 
 
