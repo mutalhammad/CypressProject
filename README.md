@@ -23,6 +23,9 @@ Orders can be generated on the already existing user profile as well
 > - Starting the order flow
 > - Till the submission of the order
 
+## Cypress dashboard results
+- [cypress.io](https://dashboard.cypress.io/projects/vxdxpq/runs/5/overview) Latest report fot test result can be found here
+
 ## Installation
 Make sure that you have node_modules folder present in your project but if not then run the following command first
 ```sh
