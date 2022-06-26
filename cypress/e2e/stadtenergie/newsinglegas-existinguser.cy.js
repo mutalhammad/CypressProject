@@ -7,7 +7,7 @@ describe('Login and creation of single gas account', () => {
   
   it('Visit website and accept cookies', () => {
     cy.visit('https://qa.stadtenergie.mblb.net/anmelden')
-    cy.get('[data-cypress-id="acceptCookies"]:visible').click()
+    cy.get('[data-cypress-id="acceptCookies"]:visible',{timeout:10000}).click()
 
     cy.get("body").then(body => {
       if(body.find('[data-cypress-id="loginButton"]').length>0){
@@ -45,7 +45,7 @@ describe('Login and creation of single gas account', () => {
 
   it('Product search screen', () => {
     cy.url().should('include', 'step=searchProduct')
-    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 60000 }).should('be.visible')
+    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 100000 }).should('be.visible')
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
@@ -79,7 +79,7 @@ describe('Login and creation of single gas account', () => {
   })
 
   it('Order submission', () => {
-    cy.get('[data-cypress-id="toAccount"]', { timeout: 30000 }).should('be.visible').click()
+    cy.get('[data-cypress-id="toAccount"]', { timeout: 60000 }).should('be.visible').click()
   })
 
   it('Goto Contracts tab', () => {

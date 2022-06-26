@@ -16,7 +16,7 @@ describe('New single gas account creation', () => {
 
   it('Visit website and accept cookies', () => {
     cy.visit('https://qa.stadtenergie.mblb.net/')
-    cy.get('[data-cypress-id="acceptCookies"]:visible').click()
+    cy.get('[data-cypress-id="acceptCookies"]:visible',{timeout:10000}).click()
   })
 
   it('Postal box modal selection', () => {
@@ -41,7 +41,7 @@ describe('New single gas account creation', () => {
 
   it('Product search screen', () => {
     cy.url().should('include', 'step=searchProduct')
-    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 60000 }).should('be.visible')
+    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 100000 }).should('be.visible')
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
@@ -91,7 +91,7 @@ describe('New single gas account creation', () => {
 
   it('Order submission success & set new password', () => {
     //cy.url().should('include', 'prozess/erfolg?type=pending')
-    cy.get('[data-cypress-id="toAccount"]', { timeout: 30000 }).should('be.visible').click()
+    cy.get('[data-cypress-id="toAccount"]', { timeout: 60000 }).should('be.visible').click()
     cy.fixture('user_details').then(data => {
       cy.get('[name="password"]').type(data.password).should('have.value', data.password)
       cy.get('[name="newPassword"]').type(data.password).should('have.value', data.password)

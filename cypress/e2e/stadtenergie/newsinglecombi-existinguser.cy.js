@@ -46,7 +46,7 @@ describe('Login and creation of single combi account', () => {
 
   it('Product search screen', () => {
     cy.url().should('include', 'step=searchProduct')
-    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 60000 }).should('be.visible')
+    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 100000 }).should('be.visible')
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
@@ -83,7 +83,7 @@ describe('Login and creation of single combi account', () => {
   })
 
   it('Order submission', () => {
-    cy.get('[data-cypress-id="toAccount"]', { timeout: 30000 }).should('be.visible').click()
+    cy.get('[data-cypress-id="toAccount"]', { timeout: 60000 }).should('be.visible').click()
   })
 
   it('Goto Contracts tab', () => {
