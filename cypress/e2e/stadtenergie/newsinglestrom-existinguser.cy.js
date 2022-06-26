@@ -13,7 +13,7 @@ describe('Login and creation of single strom account', () => {
       if(body.find('[data-cypress-id="loginButton"]').length>0){
         cy.fixture('user_details').then(data => {
           cy.get('[data-cypress-id="emailResetPassword"]', { timeout: 30000 }).should('be.visible')
-          cy.get('[data-cypress-id="emailResetPassword"]',{timeout:30000}).type(data.email).should('have.value', data.email)
+          cy.get('[data-cypress-id="emailResetPassword"]',{timeout:30000}).type(data.existingUserEmail).should('have.value', data.existingUserEmail)
           cy.get('[name="password"]').type(data.password).should('have.value', data.password)
           })
         cy.get('[data-cypress-id="loginButton"]').click()
@@ -43,7 +43,7 @@ describe('Login and creation of single strom account', () => {
 
   it('Product search screen', () => {
     cy.url().should('include', 'step=searchProduct')
-    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 30000 }).should('be.visible');
+    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 60000 }).should('be.visible')
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 

@@ -39,7 +39,7 @@ describe('New single strom account creation', () => {
 
   it('Product search screen', () => {
     cy.url().should('include', 'step=searchProduct')
-    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 30000 }).should('be.visible');
+    cy.get('[data-cypress-id="continueWithOrder"]', { timeout: 60000 }).should('be.visible')
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
