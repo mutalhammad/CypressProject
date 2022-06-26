@@ -1,29 +1,25 @@
 import dayjs from 'dayjs';
-describe('Login and creation of single combi account', () => {
-
-  beforeEach(() => {
-    Cypress.Cookies.preserveOnce('stadtenergie-token');
-  })
+describe('New single gas account creation', () => {
   
-  it('Visit website and accept cookies', () => {
-    cy.visit('https://qa.stadtenergie.mblb.net/anmelden')
-    cy.get('[data-cypress-id="acceptCookies"]:visible', { timeout: 30000 }).click()
-
-    cy.get("body").then(body => {
-      if(body.find('[data-cypress-id="loginButton"]').length>0){
-        cy.fixture('user_details').then(data => {
-          cy.get('[data-cypress-id="emailResetPassword"]', { timeout: 30000 }).should('be.visible')
-          cy.get('[data-cypress-id="emailResetPassword"]',{timeout:30000}).type(data.email).should('have.value', data.email)
-          cy.get('[name="password"]').type(data.password).should('have.value', data.password)
-          })
-        cy.get('[data-cypress-id="loginButton"]').click()
-        cy.get('[data-cypress-id="Übersicht"]', { timeout: 30000 }).should('be.visible')
+  const emailCalculation = 'muhammad+ct'+new Date().valueOf()+'@mblb.net'
+  it('Generate and update email in fixture file', () => {
+    cy.readFile("cypress/fixtures/user_details.json", (err, data) => {
+      if (err) {
+          return console.error(err);
       }
+    }).then((data) => {
+      data.email = emailCalculation
+      cy.writeFile("cypress/fixtures/user_details.json", JSON.stringify(data, null, '\t'))
     })
   })
 
-  it('Go to postal code step', () => {
-    cy.get('div[data-cypress-id="main-page"]').click();
+
+  it('Visit website and accept cookies', () => {
+    cy.visit('https://qa.stadtenergie.mblb.net/')
+    cy.get('[data-cypress-id="acceptCookies"]:visible').click()
+  })
+
+  it('Postal box modal selection', () => {
     cy.fixture('user_details').then(data => {
       cy.get('[data-cypress-id="postalCode"]').type(data.postalCode).should('have.value', data.postalCode)
       cy.get('[name="street"]', { timeout: 10000 }).should('be.visible')
@@ -35,7 +31,6 @@ describe('Login and creation of single combi account', () => {
 
   it('Tarrif calculator screen', () => {
     cy.url().should('include', 'step=tariff')
-    //cy.get('[data-cypress-id="tab-Kombi"]').click()
     cy.fixture('user_details').then(data => {
       cy.get('[id="numberPerson"]').type('{selectall}{backspace}5').should('have.value', '5')
       cy.get('[name="livingSpace"]').type('{selectall}{backspace}200').should('have.value', data.livingSpace)
@@ -50,12 +45,27 @@ describe('Login and creation of single combi account', () => {
     cy.get('[data-cypress-id="continueWithOrder"]').click()
   })
 
-  it('Continue with user details - Step 1', () => {
+  it('Input user details - Step 1', () => {
     cy.url().should('include', 'prozess?step=0')
-    cy.get('[data-cypress-id="nextPersonalInformation"]').click()
+    
+    
+    cy.fixture('user_details').then(data => {
+      data.email = emailCalculation
+    })
+    .then(data => {
+      cy.get('[name="firstname"]').type(data.firstname).should('have.value', data.firstname)
+      cy.get('[name="surname"]').type(data.lastname).should('have.value', data.lastname)
+      cy.get('[name="dateOfBirth"]').type(data.dob).should('have.value', data.dob)
+      cy.get('[name="email"]').type(data.email).should('have.value', data.email)
+      cy.get('[name="phoneNumberValue"]').type(data.phoneNumber).should('have.value', data.phoneNumber)
+      cy.get('[name="street"]').should('have.value', data.combiAddress)
+      cy.get('[name="houseNumber"]').should('have.value', data.houseNumber)
+      cy.get('[name="postalCode"]').should('have.value', data.postalCode)
+      cy.get('[data-cypress-id="nextPersonalInformation"]').click()
+    })
   })
 
-  it('Continue with user details - Step 2', () => {
+  it('Input user details - Step 2', () => {
     cy.url().should('include', 'prozess?step=1')
     const now = dayjs();
     const nextMonth = now.month(now.month() + 1).date(1).hour(0).minute(0).second(0);
@@ -74,7 +84,7 @@ describe('Login and creation of single combi account', () => {
     })
   })
 
-  it('Continue with user details - Step 3', () => {
+  it('Input user details - Step 3', () => {
     cy.url({timeout:30000}).should('include', 'prozess?step=3')
     cy.get('div[data-cypress-id="authorizeStadtenergy"]').click();
     cy.get('div[data-cypress-id="acceptTermsAndConditionsCombi"]').click();
@@ -82,11 +92,19 @@ describe('Login and creation of single combi account', () => {
     cy.get('button[data-cypress-id="submitOrder"]').click();
   })
 
-  it('Order submission', () => {
+  it('Order submission success & set new password', () => {
+    //cy.url().should('include', 'prozess/erfolg?type=pending')
     cy.get('[data-cypress-id="toAccount"]', { timeout: 30000 }).should('be.visible').click()
+    cy.fixture('user_details').then(data => {
+      cy.get('[name="password"]').type(data.password).should('have.value', data.password)
+      cy.get('[name="newPassword"]').type(data.password).should('have.value', data.password)
+    })
+    cy.get('form').submit()
   })
 
   it('Goto Contracts tab', () => {
     cy.get('[data-cypress-id="Verträge"]', { timeout: 30000 }).should('be.visible').click()
-  }) 
+  })
+
+
 })
